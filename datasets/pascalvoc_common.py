@@ -23,26 +23,15 @@ slim = tf.contrib.slim
 
 VOC_LABELS = {
     'none': (0, 'Background'),
-    'aeroplane': (1, 'Vehicle'),
-    'bicycle': (2, 'Vehicle'),
-    'bird': (3, 'Animal'),
-    'boat': (4, 'Vehicle'),
-    'bottle': (5, 'Indoor'),
-    'bus': (6, 'Vehicle'),
-    'car': (7, 'Vehicle'),
-    'cat': (8, 'Animal'),
-    'chair': (9, 'Indoor'),
-    'cow': (10, 'Animal'),
-    'diningtable': (11, 'Indoor'),
-    'dog': (12, 'Animal'),
-    'horse': (13, 'Animal'),
-    'motorbike': (14, 'Vehicle'),
-    'person': (15, 'Person'),
-    'pottedplant': (16, 'Indoor'),
-    'sheep': (17, 'Animal'),
-    'sofa': (18, 'Indoor'),
-    'train': (19, 'Vehicle'),
-    'tvmonitor': (20, 'Indoor'),
+    '1 Yen':(1,'coin'),
+    '5 Yen':(2,'coin'),
+    '10 Yen':(3,'coin'),
+    '50 Yen':(4,'coin'),
+    '100 Yen':(5,'coin'),
+    '500 Yen':(6,'coin'),
+    '1,000 Yen':(7,'banknote'),
+    '5,000 Yen':(8,'banknote'),
+    '10,000 Yen':(9,'banknote'),
 }
 
 
@@ -65,6 +54,7 @@ def get_split(split_name, dataset_dir, file_pattern, reader,
         ValueError: if `split_name` is not a valid train/test split.
     """
     if split_name not in split_to_sizes:
+        print(split_to_sizes)
         raise ValueError('split name %s was not recognized.' % split_name)
     file_pattern = os.path.join(dataset_dir, file_pattern % split_name)
 
