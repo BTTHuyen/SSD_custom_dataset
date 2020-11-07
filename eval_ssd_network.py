@@ -29,8 +29,14 @@ from datasets import dataset_factory
 from nets import nets_factory
 from preprocessing import preprocessing_factory
 
-slim = tf.contrib.slim
 
+slim = tf.contrib.slim
+from tensorflow.compat.v1 import ConfigProto
+from tensorflow.compat.v1 import InteractiveSession
+
+config = ConfigProto()
+config.gpu_options.allow_growth = True
+session = InteractiveSession(config=config)
 # =========================================================================== #
 # Some default EVAL parameters
 # =========================================================================== #
@@ -63,7 +69,7 @@ tf.app.flags.DEFINE_boolean(
 # Main evaluation flags.
 # =========================================================================== #
 tf.app.flags.DEFINE_integer(
-    'num_classes', 21, 'Number of classes to use in the dataset.')
+    'num_classes', 9, 'Number of classes to use in the dataset.')
 tf.app.flags.DEFINE_integer(
     'batch_size', 1, 'The number of samples in each batch.')
 tf.app.flags.DEFINE_integer(
@@ -104,6 +110,14 @@ tf.app.flags.DEFINE_boolean(
 FLAGS = tf.app.flags.FLAGS
 
 
+def flatten(x): 
+    result = [] 
+    for el in x: 
+        if isinstance(el, tuple):
+            result.extend(flatten(el))
+        else: 
+            result.append(el) 
+    return result
 def main(_):
     if not FLAGS.dataset_dir:
         raise ValueError('You must supply the dataset directory with --dataset_dir')
@@ -238,6 +252,7 @@ def main(_):
 
             # FP and TP metrics.
             tp_fp_metric = tfe.streaming_tp_fp_arrays(num_gbboxes, tp, fp, rscores)
+            print(tp_fp_metric)
             for c in tp_fp_metric[0].keys():
                 dict_metrics['tp_fp_%s' % c] = (tp_fp_metric[0][c],
                                                 tp_fp_metric[1][c])
@@ -246,11 +261,13 @@ def main(_):
             aps_voc07 = {}
             aps_voc12 = {}
             for c in tp_fp_metric[0].keys():
+                
                 # Precison and recall values.
                 prec, rec = tfe.precision_recall(*tp_fp_metric[0][c])
 
                 # Average precision VOC07.
                 v = tfe.average_precision_voc07(prec, rec)
+                print("c:",c,"----v:",v)
                 summary_name = 'AP_VOC07/%s' % c
                 op = tf.summary.scalar(summary_name, v, collections=[])
                 # op = tf.Print(op, [v], summary_name)
@@ -315,7 +332,7 @@ def main(_):
                 checkpoint_path=checkpoint_path,
                 logdir=FLAGS.eval_dir,
                 num_evals=num_batches,
-                eval_op=list(names_to_updates.values()),
+                eval_op=flatten(list(names_to_updates.values())),
                 variables_to_restore=variables_to_restore,
                 session_config=config)
             # Log time spent.
@@ -334,7 +351,7 @@ def main(_):
                 checkpoint_dir=checkpoint_path,
                 logdir=FLAGS.eval_dir,
                 num_evals=num_batches,
-                eval_op=list(names_to_updates.values()),
+                eval_op=flatten(list(names_to_updates.values())),
                 variables_to_restore=variables_to_restore,
                 eval_interval_secs=60,
                 max_number_of_evaluations=np.inf,
