@@ -50,7 +50,7 @@ def main(_):
     print('Dataset directory:', FLAGS.dataset_dir)
     print('Output directory:', FLAGS.output_dir)
 
-    if FLAGS.dataset_name == 'pascalvoc':
+    if FLAGS.dataset_name == 'coin_banknote':
         pascalvoc_to_tfrecords.run(FLAGS.dataset_dir, FLAGS.output_dir, FLAGS.output_name)
     else:
         raise ValueError('Dataset [%s] was not recognized.' % FLAGS.dataset_name)
