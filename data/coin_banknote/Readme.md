@@ -9,4 +9,4 @@
 train.txt, test.txt, val.txt include file name without extension
 `coin5_reverse_041`
 
-** Use `train_test_val.py` to create train.txt, test.txt, val.txt for training model
+** Use `train_test_val.py` to create train.txt, test.txt, val.txt for training model**
